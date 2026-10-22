@@ -1,7 +1,7 @@
 [
     {
         "Name": "OpenERP-WhatsApp build-push-t",
-        "Dir": "./openerp-whatsapp",
+        "Dir": "./../openerp-whatsapp",
         "File": "Makefile",
         "Target": "build-push-t",
         "SubJobs": [
@@ -14,8 +14,8 @@
         ]
     },
     {
-        "Name": "OpenERP-Front build-push-t",
-        "Dir": "./openerp-front",
+        "Name": "OpenERP-Fron build-push-t",
+        "Dir": "./../openerp-front",
         "File": "makefile",
         "Target": "build-push-t",
         "SubJobs": [
