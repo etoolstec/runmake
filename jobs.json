@@ -1,0 +1,14 @@
+[
+    {
+        "Name": "OpenERP-WhatsApp build-push-t",
+        "Dir": "./openerp-whatsapp",
+        "File": "Makefile",
+        "Target": "build-push-t"
+    },
+    {
+        "Name": "OpenERP-Fron build-push-t",
+        "Dir": "./openerp-front",
+        "File": "makefile",
+        "Target": "build-push-t"
+    }
+]
