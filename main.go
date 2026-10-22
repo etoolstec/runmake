@@ -12,10 +12,11 @@ import (
 )
 
 type Job struct {
-	Name   string // nome para identificar nos logs
-	Dir    string // pasta onde está o Makefile
-	File   string // nome do arquivo (ex: Makefile, build.mk)
-	Target string // alvo do make (ex: build, test). Vazio = alvo padrão
+	Name    string // nome para identificar nos logs
+	Dir     string // pasta onde está o Makefile
+	File    string // nome do arquivo (ex: Makefile, build.mk)
+	Target  string // alvo do make (ex: build, test). Vazio = alvo padrão
+	SubJobs []Job  // jobs filhos (opcional)
 }
 
 type Result struct {
@@ -39,31 +40,22 @@ func runMake(ctx context.Context, job Job) error {
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("[%s] falhou: %w", job.Name, err)
 	}
+	if len(job.SubJobs) > 0 {
+		fmt.Printf("[%s] iniciando jobs filhos\n", job.Name)
+		if err := runjobs(ctx, job.SubJobs); err != nil {
+			return fmt.Errorf("[%s] falhou ao executar jobs filhos: %w", job.Name, err)
+		}
+	}
 
 	fmt.Printf("[%s] finalizado com sucesso\n", job.Name)
 	return nil
 }
 
-func main() {
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer stop()
-
-	data, err := os.ReadFile("./jobs.json")
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "erro ao ler o arquivo de jobs: %v\n", err)
-		os.Exit(1)
-	}
-
-	var jobs []Job
-	if err := json.Unmarshal(data, &jobs); err != nil {
-		fmt.Fprintf(os.Stderr, "erro ao analisar o arquivo de jobs: %v\n", err)
-		os.Exit(1)
-	}
-
+func runjobs(ctx context.Context, Jobs []Job) error {
 	var wg sync.WaitGroup
-	results := make(chan Result, len(jobs))
+	results := make(chan Result, len(Jobs))
 
-	for _, job := range jobs {
+	for _, job := range Jobs {
 		wg.Add(1)
 		go func(j Job) {
 			defer wg.Done()
@@ -83,6 +75,31 @@ func main() {
 	}
 
 	if failed {
+		return fmt.Errorf("um ou mais jobs falharam")
+	}
+	return nil
+}
+
+func main() {
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
+	data, err := os.ReadFile("./jobs.json")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "erro ao ler o arquivo de jobs: %v\n", err)
+		os.Exit(1)
+	}
+
+	var jobs []Job
+	if err := json.Unmarshal(data, &jobs); err != nil {
+		fmt.Fprintf(os.Stderr, "erro ao analisar o arquivo de jobs: %v\n", err)
+		os.Exit(1)
+	}
+
+	err = runjobs(ctx, jobs)
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "erro ao executar os jobs: %v\n", err)
 		os.Exit(1)
 	}
 	fmt.Println("todos os scripts terminaram com sucesso")

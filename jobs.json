@@ -3,12 +3,28 @@
         "Name": "OpenERP-WhatsApp build-push-t",
         "Dir": "./openerp-whatsapp",
         "File": "Makefile",
-        "Target": "build-push-t"
+        "Target": "build-push-t",
+        "SubJobs": [
+            {
+                "Name": "OpenERP-WhatsApp deploy-t",
+                "Dir": "./openerp-whatsapp",
+                "File": "Makefile",
+                "Target": "deploy-t"
+            }
+        ]
     },
     {
-        "Name": "OpenERP-Fron build-push-t",
+        "Name": "OpenERP-Front build-push-t",
         "Dir": "./openerp-front",
         "File": "makefile",
-        "Target": "build-push-t"
+        "Target": "build-push-t",
+        "SubJobs": [
+            {
+                "Name": "OpenERP-Front deploy-t",
+                "Dir": "./openerp-front",
+                "File": "makefile",
+                "Target": "deploy-t"
+            }
+        ]
     }
 ]
