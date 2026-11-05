@@ -7,7 +7,7 @@
         "SubJobs": [
             {
                 "Name": "OpenERP-WhatsApp deploy-t",
-                "Dir": "./openerp-whatsapp",
+                "Dir": "./../openerp-whatsapp",
                 "File": "Makefile",
                 "Target": "deploy-t"
             }
@@ -21,7 +21,7 @@
         "SubJobs": [
             {
                 "Name": "OpenERP-Front deploy-t",
-                "Dir": "./openerp-front",
+                "Dir": "./../openerp-front",
                 "File": "makefile",
                 "Target": "deploy-t"
             }
